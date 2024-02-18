@@ -13,5 +13,5 @@ const CHAT_REPOSITORY = TypeOrmModule.forFeature([ChatRoomEntity, ChatMessageEnt
     providers: [],
     exports: [CHAT_REPOSITORY]
 })
-export class UserModule {
+export class ChatModule {
 }
