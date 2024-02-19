@@ -8,6 +8,7 @@ import { AuthController } from "../../../application/domain/auth/controller/auth
 import { AuthService } from "../../../application/domain/auth/services/auth.service";
 import { JwtAdapter } from "../jwt/jwt.adapter";
 import { UserModule } from "./user.module";
+import { KakaoStrategy } from "../oauth/kakao.strategy";
 
 @Global()
 @Module({
@@ -26,7 +27,7 @@ import { UserModule } from "./user.module";
         })
     ],
     controllers: [ AuthController ],
-    providers: [ JwtStrategy, JwtAdapter, GoogleStrategy, AuthService, UserModule ],
+    providers: [ JwtStrategy, JwtAdapter, GoogleStrategy, KakaoStrategy, AuthService, UserModule ],
     exports: [ JwtStrategy, PassportModule ]
 })
 export class AuthModule {

@@ -9,9 +9,23 @@ export class AuthController {
     ) {
     }
 
-    @Post('google')
+    @Get('google')
     @UseGuards(AuthGuard('google'))
-    async socialLoginWithGoogle(@Req() req) {
+    async socialLoginWithGoogle() {}
+
+    @Get('google/callback')
+    @UseGuards(AuthGuard('google'))
+    async GoogleCallback(@Req() req) {
         return this.authServie.googleLogin(req)
+    }
+
+    @Get('kakao')
+    @UseGuards(AuthGuard('kakao'))
+    async socialLoginWithKakao() {}
+
+    @Get('kakao/callback')
+    @UseGuards(AuthGuard('kakao'))
+    async KakaoCallback(@Req() req) {
+        return this.authServie.kakaoLogin(req)
     }
 }
