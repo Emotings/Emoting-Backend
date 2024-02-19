@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Req, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "../services/auth.service";
 
@@ -11,7 +11,8 @@ export class AuthController {
 
     @Get('google')
     @UseGuards(AuthGuard('google'))
-    async socialLoginWithGoogle() {}
+    async socialLoginWithGoogle() {
+    }
 
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
@@ -21,11 +22,23 @@ export class AuthController {
 
     @Get('kakao')
     @UseGuards(AuthGuard('kakao'))
-    async socialLoginWithKakao() {}
+    async socialLoginWithKakao() {
+    }
 
     @Get('kakao/callback')
     @UseGuards(AuthGuard('kakao'))
     async KakaoCallback(@Req() req) {
         return this.authServie.kakaoLogin(req)
+    }
+
+    @Get('naver')
+    @UseGuards(AuthGuard('kakao'))
+    async socialLoginWithKakao() {
+    }
+
+    @Get('naver/callback')
+    @UseGuards(AuthGuard('naver'))
+    async naverCallback(@Req() req) {
+        return this.authServie.naverLogin(req)
     }
 }
