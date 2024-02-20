@@ -15,9 +15,9 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
 
     async validate(profile: Profile) {
         return {
-            email: profile.kakao_account.email,
-            nickname: profile.properties.nickname,
-            photo: profile.properties.profile_image,
+            email: profile.emails[0].value,
+            nickname: profile.username,
+            photo: profile.photos[0].value,
         }
     }
 }

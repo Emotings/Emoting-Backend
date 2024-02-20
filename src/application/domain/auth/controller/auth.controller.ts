@@ -33,7 +33,7 @@ export class AuthController {
 
     @Get('naver')
     @UseGuards(AuthGuard('kakao'))
-    async socialLoginWithKakao() {
+    async socialLoginWithNaver() {
     }
 
     @Get('naver/callback')

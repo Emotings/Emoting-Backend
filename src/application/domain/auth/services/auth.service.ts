@@ -64,7 +64,7 @@ export class AuthService {
             newUser.email = reqUser.email
             newUser.nickname = reqUser.nickname
             newUser.password = this.config.get('SECRET_PASSWORD')
-            newUser.profile = reqUser.profile_image
+            newUser.profile = reqUser.profile
             newUser.provider = 'NAVER'
             newUser.age = reqUser.age || 0
 
