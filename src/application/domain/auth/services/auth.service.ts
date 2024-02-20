@@ -23,10 +23,10 @@ export class AuthService {
         if (!user) {
             const newUser = new UserEntity();
 
-            newUser.email = reqUser.emails[0].value
+            newUser.email = reqUser.email
             newUser.nickname = reqUser.givenName
             newUser.password = this.config.get('SECRET_PASSWORD')
-            newUser.profile = reqUser.photos[0].value
+            newUser.profile = reqUser.profile
             newUser.provider = 'GOOGLE'
             newUser.age = reqUser.age || 0
 
