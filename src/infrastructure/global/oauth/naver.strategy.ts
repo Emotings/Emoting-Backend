@@ -8,7 +8,8 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
     constructor(config: ConfigService) {
         super({
             clientID: config.get('NAVER_CLIENT_ID'),
-            callbackURL: config.get('NAVER_REDIRECT_URL')
+            callbackURL: config.get('NAVER_REDIRECT_URL'),
+            scope: [ 'email', 'profile' ]
         });
     }
 
