@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseFilters, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "../services/auth.service";
 import { LoginRequest, SignUpRequest } from "../dto/auth.dto";
+import { GlobalExceptionFilter } from "../../../../infrastructure/global/filter/global.exception.filter";
 
+@UseFilters(GlobalExceptionFilter)
 @Controller('auth')
 export class AuthController {
     constructor(
