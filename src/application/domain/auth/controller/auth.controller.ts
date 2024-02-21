@@ -1,7 +1,10 @@
-import { Controller, Get, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseFilters, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "../services/auth.service";
+import { LoginRequest, SignUpRequest } from "../dto/auth.dto";
+import { GlobalExceptionFilter } from "../../../../infrastructure/global/filter/global.exception.filter";
 
+@UseFilters(GlobalExceptionFilter)
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -40,5 +43,15 @@ export class AuthController {
     @UseGuards(AuthGuard('naver'))
     async naverCallback(@Req() req) {
         return this.authServie.naverLogin(req)
+    }
+
+    @Post('signup')
+    async localSignup(@Body() request: SignUpRequest) {
+        return this.authServie.localSignup(request)
+    }
+
+    @Post('login')
+    async localLogin(@Body() request: LoginRequest) {
+        return this.authServie.localLogin(request)
     }
 }

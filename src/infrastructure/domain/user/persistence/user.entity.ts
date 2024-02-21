@@ -2,7 +2,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('tbl_user')
 export class UserEntity {
-
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
