@@ -5,7 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { JwtAdapter } from "../../../../infrastructure/global/jwt/jwt.adapter";
 import { GoogleStrategy } from "../../../../infrastructure/global/oauth/google.strategy";
 import { ConfigService } from "@nestjs/config";
-import { SignUpRequest } from "../dto/auth.dto";
+import { LoginRequest, SignUpRequest } from "../dto/auth.dto";
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -83,5 +83,24 @@ export class AuthService {
         }
         const hashPassword = bcrypt.hashSync(password, 10)
         await this.userRepository.save({ email, password: hashPassword, nickname, age, profile: "", provider: 'LOCAL' })
+    }
+
+    async localLogin(request: LoginRequest) {
+        let email = request.email
+        let user = await this.userRepository.findOneBy({ email })
+        this.validateUser(request, user)
+        return await this.jwtAdapter.receiveToken(user.email)
+    }
+
+    private validateUser(request: LoginRequest, user: UserEntity) {
+        if (!user) {
+            throw new HttpException('User Not Found', HttpStatus.NOT_FOUND)
+        }
+        if (user.provider !== 'LOCAL') {
+            throw new HttpException(user.provider + ' login', HttpStatus.BAD_REQUEST)
+        }
+        if (!bcrypt.compareSync(request.password, user.password)) {
+            throw new HttpException('Password Mismatched', HttpStatus.BAD_REQUEST)
+        }
     }
 }

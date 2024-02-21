@@ -21,3 +21,10 @@ export class SignUpRequest {
     @IsNumber()
     age: number;
 }
+
+export class LoginRequest {
+    @IsNotEmpty()
+    email: string;
+    @IsNotEmpty()
+    password: string;
+}
