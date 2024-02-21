@@ -1,10 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtAdapter } from "../../../../infrastructure/global/jwt/jwt.adapter";
 import { GoogleStrategy } from "../../../../infrastructure/global/oauth/google.strategy";
 import { ConfigService } from "@nestjs/config";
+import { SignUpRequest } from "../dto/auth.dto";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -72,5 +74,14 @@ export class AuthService {
         }
 
         return this.jwtAdapter.receiveToken(user.email)
+    }
+
+    async localSignup(request: SignUpRequest) {
+        let { email, password, nickname, age } = request
+        if (await this.userRepository.existsBy({ email })) {
+            throw new HttpException('Already Emails Exist', HttpStatus.CONFLICT)
+        }
+        const hashPassword = bcrypt.hashSync(password, 10)
+        await this.userRepository.save({ email, password: hashPassword, nickname, age, profile: "", provider: 'LOCAL' })
     }
 }
