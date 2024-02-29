@@ -14,8 +14,6 @@ export class UserService {
     async applyFriend(req) {
         let friendApply = new FriendApplyEntity();
 
-        console.log(req)
-
         friendApply.status = 'WAIT'
         friendApply.requestUserId = req.authInfo.id
         friendApply.receiveUserId = req.user.id
