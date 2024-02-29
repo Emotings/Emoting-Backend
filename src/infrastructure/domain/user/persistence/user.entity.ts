@@ -20,6 +20,9 @@ export class UserEntity {
     @Column('varchar', { nullable: false, length: 3000 })
     profile: string;
 
+    @Column('boolean', { nullable: false, default: true })
+    isTurnOn: boolean;
+
     @Column('enum', { enum: [ 'LOCAL', 'GOOGLE', 'KAKAO', 'NAVER' ], nullable: false })
     provider;
 }
