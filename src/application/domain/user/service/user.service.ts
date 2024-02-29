@@ -40,7 +40,7 @@ export class UserService {
         let friendListResponse = new QueryApplyFriendListResponse();
 
         friendListResponse.users = await Promise.all(friendList.map(async (friend) => {
-            let requestUser = friend.requestUserId
+            let requestUser = await this.userRepository.findOneBy(friend.requestUserId);
             let element = new FriendListElement();
 
             element.nickname = requestUser.nickname
