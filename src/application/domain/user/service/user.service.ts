@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { FriendApplyEntity } from "../../../../infrastructure/domain/user/persistence/friend.apply.entity";
@@ -20,11 +20,11 @@ export class UserService {
         let friend = await this.userRepository.findOne({ where: id })
 
         if (!friend) {
-            throw new HttpException('User(Friend) Not Found', 404)
+            throw new HttpException('User(Friend) Not Found', HttpStatus.NOT_FOUND)
         }
 
         if (await this.friendApplyRepository.existsBy({ requestUserId: req, receiveUserId: friend })) {
-            throw new HttpException('Already Apply', 409)
+            throw new HttpException('Already Apply', HttpStatus.CONFLICT)
         }
 
         friendApply.status = 'WAIT'
@@ -35,6 +35,7 @@ export class UserService {
     }
 
     async queryApplyFriend(req) {
+
         let friendList = await this.friendApplyRepository.findBy({ receiveUserId: req })
         let friendListResponse = new QueryApplyFriendListResponse();
 

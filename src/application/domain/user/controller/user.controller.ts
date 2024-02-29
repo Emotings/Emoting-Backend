@@ -21,7 +21,7 @@ export class UserController {
 
     @UseGuards(AuthGuard())
     @Get('apply')
-    async queryApplyFriend(@CurrentUser() req: UserEntity) {
-        return await this.userService.queryApplyFriend(req)
+    async queryApplyFriend(@CurrentUser() user: UserEntity) {
+        return await this.userService.queryApplyFriend(user)
     }
 }
