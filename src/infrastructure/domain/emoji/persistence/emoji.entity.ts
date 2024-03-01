@@ -12,10 +12,13 @@ export class EmojiEntity {
     @Column('varchar', { length: 1000, nullable: false })
     content: string;
 
+    @Column('varchar', { length: 3000, nullable: false })
+    image: string;
+
     @Column('int', { nullable: false, default: 0 })
-    price: string;
+    price: number;
 
     @ManyToOne(() => UserEntity)
     @JoinColumn({ name: 'user_id' })
-    userId: string;
+    userId: UserEntity;
 }
