@@ -18,7 +18,7 @@ export class EmojiEntity {
     @Column('int', { nullable: false, default: 0 })
     price: number;
 
-    @ManyToOne(() => UserEntity)
+    @ManyToOne(() => UserEntity, { lazy: true })
     @JoinColumn({ name: 'user_id' })
     userId: UserEntity;
 }
