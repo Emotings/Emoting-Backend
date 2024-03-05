@@ -1,15 +1,16 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmojiEntity } from "../../domain/emoji/persistence/emoji.entity";
-import { EmojiImageEntity } from "../../domain/emoji/persistence/emoji.image.entity";
+import { EmojiService } from "../../../application/domain/emoji/service/emoji.service";
+import { EmojiController } from "../../../application/domain/emoji/controller/emoji.controller";
 
-const EMOJI_REPOSITORY = TypeOrmModule.forFeature([ EmojiEntity, EmojiImageEntity ]);
+const EMOJI_REPOSITORY = TypeOrmModule.forFeature([ EmojiEntity ]);
 
 @Global()
 @Module({
     imports: [ EMOJI_REPOSITORY ],
-    controllers: [],
-    providers: [],
+    controllers: [ EmojiController ],
+    providers: [ EmojiService ],
     exports: [ EMOJI_REPOSITORY ]
 })
 export class EmojiModule {
