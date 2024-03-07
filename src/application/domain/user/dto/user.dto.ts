@@ -3,6 +3,7 @@ export class QueryApplyFriendListResponse {
 }
 
 export class FriendListElement {
+    id: string
     nickname: string
     profile: string
     isTurnOn: boolean

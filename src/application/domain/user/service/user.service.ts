@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { FriendApplyEntity } from "../../../../infrastructure/domain/user/persistence/friend.apply.entity";
 import { FriendListElement, QueryApplyFriendListResponse } from "../dto/user.dto";
 import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
+import { FriendEntity } from "../../../../infrastructure/domain/user/persistence/friend.entity";
 
 @Injectable()
 export class UserService {
@@ -12,6 +13,8 @@ export class UserService {
         private friendApplyRepository: Repository<FriendApplyEntity>,
         @InjectRepository(UserEntity)
         private userRepository: Repository<UserEntity>,
+        @InjectRepository(FriendEntity)
+        private friendRepository: Repository<FriendEntity>,
     ) {
     }
 
@@ -35,14 +38,14 @@ export class UserService {
     }
 
     async queryApplyFriend(req) {
-
-        let friendList = await this.friendApplyRepository.findBy({ receiveUserId: req })
+        let applyList = await this.friendApplyRepository.findBy({ receiveUserId: req })
         let friendListResponse = new QueryApplyFriendListResponse();
 
-        friendListResponse.users = await Promise.all(friendList.map(async (friend) => {
+        friendListResponse.users = await Promise.all(applyList.map(async (friend) => {
             let requestUser = await this.userRepository.findOneBy(friend.requestUserId);
             let element = new FriendListElement();
 
+            element.id = friend.id
             element.nickname = requestUser.nickname
             element.profile = requestUser.profile
             element.isTurnOn = requestUser.isTurnOn
@@ -51,5 +54,69 @@ export class UserService {
         }))
 
         return friendListResponse
+    }
+
+    async queryFriend(req) {
+        let friendList = await this.friendRepository.findBy({ userId1: req })
+        let friendListResponse = new QueryApplyFriendListResponse();
+
+        friendListResponse.users = await Promise.all(friendList.map(async (friend) => {
+            let requestUser = await this.userRepository.findOneBy({ id: friend.userId2.id });
+            let element = new FriendListElement();
+
+            element.id = friend.id
+            element.nickname = requestUser.nickname
+            element.profile = requestUser.profile
+            element.isTurnOn = requestUser.isTurnOn
+
+            return element
+        }))
+        return friendListResponse
+    }
+
+    async searchUser(keyword) {
+        let users = await this.userRepository.findBy({ nickname: keyword })
+
+        let friendListResponse = new QueryApplyFriendListResponse();
+        friendListResponse.users = await Promise.all(users.map(async (user) => {
+            let requestUser = await this.userRepository.findOneBy({ id: user.id });
+            let element = new FriendListElement();
+
+            element.id = user.id
+            element.nickname = requestUser.nickname
+            element.profile = requestUser.profile
+            element.isTurnOn = requestUser.isTurnOn
+
+            return element
+        }))
+
+        return friendListResponse
+    }
+
+    async updateApplyStatus(id, status, req) {
+        let apply = await this.friendApplyRepository.findOneBy({ id: id })
+
+        if (!apply) {
+            throw new HttpException('Apply Not Found', HttpStatus.NOT_FOUND)
+        }
+
+        if (status === 'ACCEPT') {
+            let friend = new FriendEntity();
+
+            friend.userId1 = req
+            friend.userId2 = apply.requestUserId
+            await this.friendRepository.save(friend)
+
+            friend.userId1 = apply.requestUserId
+            friend.userId2 = req
+            await this.friendRepository.save(friend)
+        } else if (status === 'REJECT') {
+            await this.friendApplyRepository.delete(apply)
+        }
+    }
+
+    async notificationOnOff(isTurnOn, req) {
+        let user = await this.userRepository.findOneBy({id: req.id})
+        user.isTurnOn = isTurnOn
     }
 }
