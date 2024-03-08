@@ -38,14 +38,14 @@ export class UserController {
     }
 
     @UseGuards(AuthGuard())
-    @Patch('/:id')
+    @Post('/:id')
     async updateApplyStatus(@Param() id, @Query('status') status, @CurrentUser() user) {
         await this.userService.updateApplyStatus(id, status, user)
     }
 
     @UseGuards(AuthGuard())
     @Patch('notification')
-    async updateIsTurnOn(@Query('isTurnOn') isTurnOn: boolean, @CurrentUser() user) {
+    async updateIsTurnOn(@Query('is-turn-on') isTurnOn: boolean, @CurrentUser() user) {
         await this.userService.notificationOnOff(isTurnOn, user)
     }
 }

@@ -57,7 +57,7 @@ export class UserService {
     }
 
     async queryFriend(req) {
-        let friendList = await this.friendRepository.findBy({ userId1: req })
+        let friendList = await this.friendRepository.findBy([ { userId1: req }, { userId2: req } ])
         let friendListResponse = new QueryApplyFriendListResponse();
 
         friendListResponse.users = await Promise.all(friendList.map(async (friend) => {
@@ -94,29 +94,22 @@ export class UserService {
     }
 
     async updateApplyStatus(id, status, req) {
-        let apply = await this.friendApplyRepository.findOneBy({ id: id })
+        let apply = await this.friendApplyRepository.findOne({ where: id })
 
         if (!apply) {
             throw new HttpException('Apply Not Found', HttpStatus.NOT_FOUND)
         }
 
         if (status === 'ACCEPT') {
-            let friend = new FriendEntity();
-
-            friend.userId1 = req
-            friend.userId2 = apply.requestUserId
-            await this.friendRepository.save(friend)
-
-            friend.userId1 = apply.requestUserId
-            friend.userId2 = req
-            await this.friendRepository.save(friend)
+            await this.friendRepository.save({ userId1: req, userId2: apply.requestUserId })
+            await this.friendApplyRepository.delete(apply.id)
         } else if (status === 'REJECT') {
-            await this.friendApplyRepository.delete(apply)
+            await this.friendApplyRepository.delete(apply.id)
         }
     }
 
     async notificationOnOff(isTurnOn, req) {
-        let user = await this.userRepository.findOneBy({id: req.id})
+        let user = await this.userRepository.findOne({ where: req.id })
         user.isTurnOn = isTurnOn
     }
 }
