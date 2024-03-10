@@ -101,10 +101,14 @@ export class UserService {
         }
 
         if (status === 'ACCEPT') {
-            await this.friendRepository.save({ userId1: req, userId2: apply.requestUserId })
-            await this.friendApplyRepository.delete(apply.id)
+            await this.friendApplyRepository.delete(apply)
+
+            let friend = new FriendEntity();
+            friend.userId1 = req
+            friend.userId2 = apply.requestUserId
+            await this.friendRepository.save(friend)
         } else if (status === 'REJECT') {
-            await this.friendApplyRepository.delete(apply.id)
+            await this.friendApplyRepository.delete(apply)
         }
     }
 

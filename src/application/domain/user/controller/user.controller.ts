@@ -38,8 +38,8 @@ export class UserController {
     }
 
     @UseGuards(AuthGuard())
-    @Post('/:id')
-    async updateApplyStatus(@Param() id, @Query('status') status, @CurrentUser() user) {
+    @Post('status/:id')
+    async updateApplyStatus(@Param() id, @Query('status') status, @CurrentUser() user: UserEntity) {
         await this.userService.updateApplyStatus(id, status, user)
     }
 
