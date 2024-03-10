@@ -31,7 +31,6 @@ export class UserController {
         return await this.userService.queryFriend(user)
     }
 
-    @UseGuards(AuthGuard())
     @Get('search')
     async searchUser(@Query('keyword') keyword: string) {
         return await this.userService.searchUser(keyword)

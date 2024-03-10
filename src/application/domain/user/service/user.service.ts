@@ -19,6 +19,7 @@ export class UserService {
     }
 
     async applyFriend(id, req) {
+        console.log(id, req)
         let friendApply = new FriendApplyEntity();
         let friend = await this.userRepository.findOne({ where: id })
 
@@ -101,11 +102,14 @@ export class UserService {
         }
 
         if (status === 'ACCEPT') {
-            await this.friendApplyRepository.delete(apply)
+            let user = await apply.requestUserId
 
             let friend = new FriendEntity();
+
             friend.userId1 = req
-            friend.userId2 = apply.requestUserId
+            friend.userId2 = user
+
+            await this.friendApplyRepository.delete(apply)
             await this.friendRepository.save(friend)
         } else if (status === 'REJECT') {
             await this.friendApplyRepository.delete(apply)
