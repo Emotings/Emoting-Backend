@@ -14,7 +14,7 @@ export class UserController {
     }
 
     @UseGuards(AuthGuard())
-    @Post('apply/:id')
+    @Patch('apply/:id')
     async applyFriend(@Param() id, @CurrentUser() user: UserEntity) {
         await this.userService.applyFriend(id, user)
     }
