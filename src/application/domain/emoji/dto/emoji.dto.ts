@@ -14,3 +14,15 @@ export class CreateEmojiRequest {
     @IsNumber()
     price: number;
 }
+
+export class QueryEmojiResponse {
+    emojis: EmojiElement[]
+}
+
+export class EmojiElement {
+    id: string
+    title: string
+    content: string
+    image: string
+    price: number
+}
