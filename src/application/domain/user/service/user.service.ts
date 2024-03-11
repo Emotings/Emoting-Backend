@@ -19,7 +19,6 @@ export class UserService {
     }
 
     async applyFriend(id, req) {
-        console.log(id, req)
         let friendApply = new FriendApplyEntity();
         let friend = await this.userRepository.findOne({ where: id })
 
@@ -117,7 +116,13 @@ export class UserService {
     }
 
     async notificationOnOff(isTurnOn, req) {
-        let user = await this.userRepository.findOne({ where: req.id })
-        user.isTurnOn = isTurnOn
+        let user = await this.userRepository.findOne({ where: req })
+
+        if (!user) {
+            throw new HttpException('User Not Found', 404)
+        }
+
+        user.isTurnOn = isTurnOn == 'true'? true : false
+        await this.userRepository.save(user)
     }
 }

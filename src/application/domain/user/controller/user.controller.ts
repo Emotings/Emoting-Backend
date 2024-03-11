@@ -44,7 +44,7 @@ export class UserController {
 
     @UseGuards(AuthGuard())
     @Patch('notification')
-    async updateIsTurnOn(@Query('is-turn-on') isTurnOn: boolean, @CurrentUser() user) {
+    async updateIsTurnOn(@Query('is-turn-on') isTurnOn: boolean, @CurrentUser() user: UserEntity) {
         await this.userService.notificationOnOff(isTurnOn, user)
     }
 }
