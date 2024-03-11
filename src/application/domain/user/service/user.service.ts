@@ -5,6 +5,9 @@ import { FriendApplyEntity } from "../../../../infrastructure/domain/user/persis
 import { FriendListElement, QueryApplyFriendListResponse } from "../dto/user.dto";
 import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
 import { FriendEntity } from "../../../../infrastructure/domain/user/persistence/friend.entity";
+import { AwsService } from "../../../../infrastructure/global/utils/s3/aws.service";
+import { UUID } from "typeorm/driver/mongodb/bson.typings";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class UserService {
@@ -15,6 +18,7 @@ export class UserService {
         private userRepository: Repository<UserEntity>,
         @InjectRepository(FriendEntity)
         private friendRepository: Repository<FriendEntity>,
+        private awsService: AwsService
     ) {
     }
 
@@ -123,6 +127,17 @@ export class UserService {
         }
 
         user.isTurnOn = isTurnOn == 'true'? true : false
+        await this.userRepository.save(user)
+    }
+
+    async uploadProfile(file, req) {
+        let user = await this.userRepository.findOne({ where: req })
+
+        if (!user) {
+            throw new HttpException('User Not Found', 404)
+        }
+
+        user.profile = await this.awsService.upload(randomUUID(), file)
         await this.userRepository.save(user)
     }
 }

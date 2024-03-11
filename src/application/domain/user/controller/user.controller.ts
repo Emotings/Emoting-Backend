@@ -1,9 +1,21 @@
-import { Controller, Get, Param, Patch, Post, Query, UseFilters, UseGuards } from "@nestjs/common";
+import {
+    Controller,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    UploadedFile,
+    UseFilters,
+    UseGuards,
+    UseInterceptors
+} from "@nestjs/common";
 import { GlobalExceptionFilter } from "../../../../infrastructure/global/filter/global.exception.filter";
 import { UserService } from "../service/user.service";
 import { AuthGuard } from "@nestjs/passport";
 import { CurrentUser } from "../../../../infrastructure/global/decorator/current-user";
 import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @UseFilters(GlobalExceptionFilter)
 @Controller('user')
@@ -46,5 +58,12 @@ export class UserController {
     @Patch('notification')
     async updateIsTurnOn(@Query('is-turn-on') isTurnOn: boolean, @CurrentUser() user: UserEntity) {
         await this.userService.notificationOnOff(isTurnOn, user)
+    }
+
+    @UseInterceptors(FileInterceptor('file'))
+    @UseGuards(AuthGuard())
+    @Patch('upload')
+    async uploadProfile(@UploadedFile('file') file: Express.Multer.File, @CurrentUser() user: UserEntity) {
+        await this.userService.uploadProfile(file, user)
     }
 }

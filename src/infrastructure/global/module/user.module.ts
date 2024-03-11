@@ -5,6 +5,7 @@ import { FriendApplyEntity } from "../../domain/user/persistence/friend.apply.en
 import { FriendEntity } from "../../domain/user/persistence/friend.entity";
 import { UserController } from "../../../application/domain/user/controller/user.controller";
 import { UserService } from "../../../application/domain/user/service/user.service";
+import { AwsService } from "../utils/s3/aws.service";
 
 const USER_REPOSITORY = TypeOrmModule.forFeature([ UserEntity, FriendApplyEntity, FriendEntity ]);
 
@@ -12,7 +13,7 @@ const USER_REPOSITORY = TypeOrmModule.forFeature([ UserEntity, FriendApplyEntity
 @Module({
     imports: [ USER_REPOSITORY ],
     controllers: [ UserController ],
-    providers: [ UserService ],
+    providers: [ UserService, AwsService ],
     exports: [ USER_REPOSITORY ]
 })
 export class UserModule {
