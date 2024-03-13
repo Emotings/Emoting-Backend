@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
 import { ChatRoomEntity } from './chat.room.entity';
 import { UserEntity } from '../../user/persistence/user.entity';
 
@@ -16,9 +16,22 @@ export class ChatMessageEntity {
 
     @ManyToOne(() => ChatRoomEntity)
     @JoinColumn({ name: 'chat_room_id' })
+    chatRoom: ChatRoomEntity;
+
+    @Column({ name: 'chat_room_id' })
     chatRoomId: string;
 
     @ManyToOne(() => UserEntity)
     @JoinColumn({ name: 'user_id' })
+    user: UserEntity;
+
+    @RelationId((chatMessage: ChatMessageEntity) => chatMessage.user)
     userId: string;
+
+    constructor(message: string, createdAt: Date, chatRoom: ChatRoomEntity, user: UserEntity) {
+        this.message = message;
+        this.createdAt = createdAt;
+        this.chatRoom = chatRoom;
+        this.user = user;
+    }
 }
