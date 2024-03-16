@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Injectable, Post, Query, UseFilters, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseFilters, UseGuards } from "@nestjs/common";
 import { GlobalExceptionFilter } from "../../../../infrastructure/global/filter/global.exception.filter";
 import { EmojiService } from "../service/emoji.service";
 import { CurrentUser } from "../../../../infrastructure/global/decorator/current-user";
