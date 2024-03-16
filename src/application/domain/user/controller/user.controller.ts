@@ -66,4 +66,11 @@ export class UserController {
     async uploadProfile(@UploadedFile('file') file: Express.Multer.File, @CurrentUser() user: UserEntity) {
         await this.userService.uploadProfile(file, user)
     }
+
+    @UseGuards(AuthGuard())
+    @Get("/info")
+    async queryUserInfo(@CurrentUser() user: UserEntity) {
+        return await this.userService.queryUserInfo(user)
+    }
+
 }

@@ -2,11 +2,10 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { FriendApplyEntity } from "../../../../infrastructure/domain/user/persistence/friend.apply.entity";
-import { FriendListElement, QueryApplyFriendListResponse } from "../dto/user.dto";
+import { FriendListElement, QueryApplyFriendListResponse, QueryUserInfoResponse } from "../dto/user.dto";
 import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
 import { FriendEntity } from "../../../../infrastructure/domain/user/persistence/friend.entity";
 import { AwsService } from "../../../../infrastructure/global/utils/s3/aws.service";
-import { UUID } from "typeorm/driver/mongodb/bson.typings";
 import { randomUUID } from "crypto";
 
 @Injectable()
@@ -126,7 +125,7 @@ export class UserService {
             throw new HttpException('User Not Found', 404)
         }
 
-        user.isTurnOn = isTurnOn == 'true'? true : false
+        user.isTurnOn = isTurnOn == 'true' ? true : false
         await this.userRepository.save(user)
     }
 
@@ -139,5 +138,22 @@ export class UserService {
 
         user.profile = await this.awsService.upload(randomUUID(), file)
         await this.userRepository.save(user)
+    }
+
+    async queryUserInfo(req) {
+        let user = await this.userRepository.findOne({ where: req })
+        let response = new QueryUserInfoResponse()
+
+        if (!user) {
+            throw new HttpException('User Not Found', 404)
+        }
+
+        response.id = user.id
+        response.email = user.email
+        response.nickname = user.nickname
+        response.point = user.point
+        response.profile = user.profile
+
+        return response
     }
 }
