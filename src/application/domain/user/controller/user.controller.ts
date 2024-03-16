@@ -80,5 +80,4 @@ export class UserController {
     async updateUserInfo(@CurrentUser() user: UserEntity, @Body() request: UpdateUserRequest) {
         return await this.userService.updateUser(user, request)
     }
-
 }
