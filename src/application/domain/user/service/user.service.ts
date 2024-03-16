@@ -156,4 +156,17 @@ export class UserService {
 
         return response
     }
+
+    async updateUser(req, request) {
+        let user = await this.userRepository.findOne({ where: req })
+
+        if (!user) {
+            throw new HttpException('User Not Found', 404)
+        }
+
+        user.email = request.email
+        user.nickname = request.nickname
+
+        await this.userRepository.save(user)
+    }
 }

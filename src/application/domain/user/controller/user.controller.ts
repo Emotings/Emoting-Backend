@@ -1,4 +1,5 @@
 import {
+    Body,
     Controller,
     Get,
     Param,
@@ -16,6 +17,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { CurrentUser } from "../../../../infrastructure/global/decorator/current-user";
 import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { UpdateUserRequest } from "../dto/user.dto";
 
 @UseFilters(GlobalExceptionFilter)
 @Controller('user')
@@ -68,9 +70,15 @@ export class UserController {
     }
 
     @UseGuards(AuthGuard())
-    @Get("/info")
+    @Get('info')
     async queryUserInfo(@CurrentUser() user: UserEntity) {
         return await this.userService.queryUserInfo(user)
+    }
+
+    @UseGuards(AuthGuard())
+    @Patch('update')
+    async updateUserInfo(@CurrentUser() user: UserEntity, @Body() request: UpdateUserRequest) {
+        return await this.userService.updateUser(user, request)
     }
 
 }
