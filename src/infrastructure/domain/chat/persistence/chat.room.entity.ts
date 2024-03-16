@@ -9,11 +9,11 @@ export class ChatRoomEntity {
     @Column('datetime', { nullable: false })
     createdAt: Date;
 
-    @Column('varchar', { nullable: true, length: 1000 })
+    @Column('varchar', { nullable: false, length: 1000 })
     lastMessage: string;
 
     constructor(createdAt: Date) {
         this.createdAt = createdAt;
-        this.lastMessage = null;
+        this.lastMessage = '';
     }
 }
