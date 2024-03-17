@@ -20,6 +20,9 @@ export class UserEntity {
     @Column('varchar', { nullable: false, length: 3000 })
     profile: string;
 
+    @Column('int', {nullable: false, default: 0})
+    point: number;
+
     @Column('boolean', { nullable: false, default: true })
     isTurnOn: boolean;
 
