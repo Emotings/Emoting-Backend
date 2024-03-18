@@ -81,6 +81,14 @@ export class EmojiService {
         return response
     }
 
+    async queryMyEmoji(req) {
+        let emojis = await this.buyEmojiRepository.createQueryBuilder()
+            .select('emoji_id')
+            .where({userId: req})
+
+        return await this.queryEmoji(emojis)
+    }
+
     private async validateBuyEmoji(user, emoji) {
         if (!user) {
             throw new HttpException('User Not Found', 404)

@@ -40,4 +40,9 @@ export class EmojiController {
     async uploadEmojiImage(@Param() id, @UploadedFile('file') file: Express.Multer.File) {
         return await this.emojiService.uploadEmojiImage(id, file)
     }
+
+    @Get('mine')
+    async queryMyEmoji(@CurrentUser() user: UserEntity) {
+        return await this.emojiService.queryMyEmoji(user)
+    }
 }
