@@ -5,6 +5,7 @@ import { Between, Repository } from "typeorm";
 import { CreateEmojiRequest, EmojiElement, QueryEmojiResponse } from "../dto/emoji.dto";
 import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
 import { BuyEmojiEntity } from "../../../../infrastructure/domain/emoji/persistence/buy-emoji.entity";
+import { throws } from "assert";
 
 @Injectable()
 export class EmojiService {
@@ -19,8 +20,20 @@ export class EmojiService {
     }
 
     async createEmoji(req, request: CreateEmojiRequest) {
+        let user = await this.userRepository.findOne({ where: req })
         let { title, content, imageUrl, price } = request
-        await this.emojiRepository.save({ title: title, content: content, image: imageUrl, price: price, userId: req })
+        let buyEmoji = new BuyEmojiEntity()
+
+        if (!user) {
+            throw new HttpException('User Not Found', 404)
+        }
+
+        let emoji = await this.emojiRepository.save({ title: title, content: content, image: imageUrl, price: price, userId: user})
+
+        buyEmoji.userId = user
+        buyEmoji.emojiId = emoji
+
+        await this.buyEmojiRepository.save(buyEmoji)
     }
 
     async queryEmojiFilter(min, max) {
