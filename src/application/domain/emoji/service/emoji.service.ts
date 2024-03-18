@@ -82,11 +82,24 @@ export class EmojiService {
     }
 
     async queryMyEmoji(req) {
-        let emojis = await this.buyEmojiRepository.createQueryBuilder()
-            .select('emoji_id')
-            .where({userId: req})
+        let buyEmojis = await this.buyEmojiRepository.findBy({ userId: req })
+        let response = new QueryEmojiResponse()
 
-        return await this.queryEmoji(emojis)
+        response.emojis = await Promise.all(buyEmojis.map(async (buyEmoji) => {
+            let element = new EmojiElement()
+            let emoji = await buyEmoji.emojiId
+            console.log(emoji)
+
+            element.id = emoji.id
+            element.title = emoji.title
+            element.content = emoji.content
+            element.image = emoji.image
+            element.price = emoji.price
+
+            return element
+        }))
+
+        return response
     }
 
     private async validateBuyEmoji(user, emoji) {
