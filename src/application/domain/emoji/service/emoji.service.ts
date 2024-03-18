@@ -2,10 +2,11 @@ import { HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { EmojiEntity } from "../../../../infrastructure/domain/emoji/persistence/emoji.entity";
 import { Between, Repository } from "typeorm";
-import { CreateEmojiRequest, EmojiElement, QueryEmojiResponse } from "../dto/emoji.dto";
+import { CreateEmojiRequest, EmojiElement, QueryEmojiResponse, UploadImageUrlResponse } from "../dto/emoji.dto";
 import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
 import { BuyEmojiEntity } from "../../../../infrastructure/domain/emoji/persistence/buy-emoji.entity";
-import { throws } from "assert";
+import { AwsService } from "../../../../infrastructure/global/utils/s3/aws.service";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class EmojiService {
@@ -16,6 +17,7 @@ export class EmojiService {
         private userRepository: Repository<UserEntity>,
         @InjectRepository(BuyEmojiEntity)
         private buyEmojiRepository: Repository<BuyEmojiEntity>,
+        private awsService: AwsService,
     ) {
     }
 
@@ -28,7 +30,13 @@ export class EmojiService {
             throw new HttpException('User Not Found', 404)
         }
 
-        let emoji = await this.emojiRepository.save({ title: title, content: content, image: imageUrl, price: price, userId: user})
+        let emoji = await this.emojiRepository.save({
+            title: title,
+            content: content,
+            image: imageUrl,
+            price: price,
+            userId: user
+        })
 
         buyEmoji.userId = user
         buyEmoji.emojiId = emoji
@@ -59,6 +67,18 @@ export class EmojiService {
         user.point -= emoji.price
         await this.userRepository.save(user)
         await this.buyEmojiRepository.save(buyEmoji)
+    }
+
+    async uploadEmojiImage(id, file) {
+        let emoji = await this.emojiRepository.findOne({ where: id })
+        let response = new UploadImageUrlResponse()
+        if (!emoji) {
+            throw new HttpException('Emoji Not Found', 404)
+        }
+
+        response.imageUrl = await this.awsService.upload(randomUUID(), file)
+
+        return response
     }
 
     private async validateBuyEmoji(user, emoji) {

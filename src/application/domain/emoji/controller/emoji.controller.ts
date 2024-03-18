@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UseFilters, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UploadedFile, UseFilters, UseGuards } from "@nestjs/common";
 import { GlobalExceptionFilter } from "../../../../infrastructure/global/filter/global.exception.filter";
 import { EmojiService } from "../service/emoji.service";
 import { CurrentUser } from "../../../../infrastructure/global/decorator/current-user";
@@ -34,5 +34,10 @@ export class EmojiController {
     @Post('buy/:id')
     async buyEmoji(@CurrentUser() user: UserEntity, @Param() id) {
         await this.emojiService.buyEmoji(user, id)
+    }
+
+    @Post('upload/:id')
+    async uploadEmojiImage(@Param() id, @UploadedFile('file') file: Express.Multer.File) {
+        return await this.emojiService.uploadEmojiImage(id, file)
     }
 }
