@@ -1,14 +1,20 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { EmojiEntity } from "../../../../infrastructure/domain/emoji/persistence/emoji.entity";
 import { Between, Repository } from "typeorm";
 import { CreateEmojiRequest, EmojiElement, QueryEmojiResponse } from "../dto/emoji.dto";
+import { UserEntity } from "../../../../infrastructure/domain/user/persistence/user.entity";
+import { BuyEmojiEntity } from "../../../../infrastructure/domain/emoji/persistence/buy-emoji.entity";
 
 @Injectable()
 export class EmojiService {
     constructor(
         @InjectRepository(EmojiEntity)
         private emojiRepository: Repository<EmojiEntity>,
+        @InjectRepository(UserEntity)
+        private userRepository: Repository<UserEntity>,
+        @InjectRepository(BuyEmojiEntity)
+        private buyEmojiRepository: Repository<BuyEmojiEntity>,
     ) {
     }
 
@@ -25,6 +31,35 @@ export class EmojiService {
     async queryEmojiAll() {
         let emojis = await this.emojiRepository.find()
         return this.queryEmoji(emojis)
+    }
+
+    async buyEmoji(req, id) {
+        let user = await this.userRepository.findOne({ where: req })
+        let emoji = await this.emojiRepository.findOne({ where: id })
+        let buyEmoji = new BuyEmojiEntity();
+
+        buyEmoji.userId = user
+        buyEmoji.emojiId = emoji
+
+        await this.validateBuyEmoji(user, emoji)
+
+        user.point -= emoji.price
+        await this.userRepository.save(user)
+        await this.buyEmojiRepository.save(buyEmoji)
+    }
+
+    private async validateBuyEmoji(user, emoji) {
+        if (!user) {
+            throw new HttpException('User Not Found', 404)
+        }
+
+        if (!emoji) {
+            throw new HttpException('Emoji Not Found', 404)
+        }
+
+        if (user.point < emoji.price) {
+            throw new HttpException('Point Not Enough', 400)
+        }
     }
 
     private async queryEmoji(emojis) {

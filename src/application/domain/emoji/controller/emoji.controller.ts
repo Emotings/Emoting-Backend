@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseFilters, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UseFilters, UseGuards } from "@nestjs/common";
 import { GlobalExceptionFilter } from "../../../../infrastructure/global/filter/global.exception.filter";
 import { EmojiService } from "../service/emoji.service";
 import { CurrentUser } from "../../../../infrastructure/global/decorator/current-user";
@@ -28,5 +28,11 @@ export class EmojiController {
     @Get()
     async queryEmojiFilter(@Query('min') min: number, @Query('max') max: number) {
         return await this.emojiService.queryEmojiFilter(min, max)
+    }
+
+    @UseGuards(AuthGuard())
+    @Post('buy/:id')
+    async buyEmoji(@CurrentUser() user: UserEntity, @Param() id) {
+        await this.emojiService.buyEmoji(user, id)
     }
 }
