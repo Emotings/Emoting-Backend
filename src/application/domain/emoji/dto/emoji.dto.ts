@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Matches } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateEmojiRequest {
     @IsNotEmpty()
@@ -13,4 +13,16 @@ export class CreateEmojiRequest {
     @IsNotEmpty()
     @IsNumber()
     price: number;
+}
+
+export class QueryEmojiResponse {
+    emojis: EmojiElement[]
+}
+
+export class EmojiElement {
+    id: string
+    title: string
+    content: string
+    image: string
+    price: number
 }
