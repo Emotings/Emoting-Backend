@@ -11,4 +11,9 @@ export class ChatRoomEntity {
 
     @Column('varchar', { nullable: false, length: 1000 })
     lastMessage: string;
+
+    constructor(createdAt: Date) {
+        this.createdAt = createdAt;
+        this.lastMessage = '';
+    }
 }
