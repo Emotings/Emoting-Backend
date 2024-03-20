@@ -26,3 +26,7 @@ export class EmojiElement {
     image: string
     price: number
 }
+
+export class UploadImageUrlResponse {
+    imageUrl: string
+}
