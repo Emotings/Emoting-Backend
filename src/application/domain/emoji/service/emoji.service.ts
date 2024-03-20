@@ -22,23 +22,18 @@ export class EmojiService {
     }
 
     async createEmoji(req, request: CreateEmojiRequest) {
-        let user = await this.userRepository.findOne({ where: req })
         let { title, content, imageUrl, price } = request
         let buyEmoji = new BuyEmojiEntity()
-
-        if (!user) {
-            throw new HttpException('User Not Found', 404)
-        }
 
         let emoji = await this.emojiRepository.save({
             title: title,
             content: content,
             image: imageUrl,
             price: price,
-            userId: user
+            userId: req
         })
 
-        buyEmoji.userId = user
+        buyEmoji.userId = req
         buyEmoji.emojiId = emoji
 
         await this.buyEmojiRepository.save(buyEmoji)
@@ -55,17 +50,16 @@ export class EmojiService {
     }
 
     async buyEmoji(req, id) {
-        let user = await this.userRepository.findOne({ where: req })
         let emoji = await this.emojiRepository.findOne({ where: id })
         let buyEmoji = new BuyEmojiEntity();
 
-        buyEmoji.userId = user
+        buyEmoji.userId = req
         buyEmoji.emojiId = emoji
 
-        await this.validateBuyEmoji(user, emoji)
+        await this.validateBuyEmoji(req, emoji)
 
-        user.point -= emoji.price
-        await this.userRepository.save(user)
+        req.point -= emoji.price
+        await this.userRepository.save(req)
         await this.buyEmojiRepository.save(buyEmoji)
     }
 
@@ -103,10 +97,6 @@ export class EmojiService {
     }
 
     private async validateBuyEmoji(user, emoji) {
-        if (!user) {
-            throw new HttpException('User Not Found', 404)
-        }
-
         if (!emoji) {
             throw new HttpException('Emoji Not Found', 404)
         }
